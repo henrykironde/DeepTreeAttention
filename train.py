@@ -20,6 +20,7 @@ from pandas.util import hash_pandas_object
 config = data.read_config("config.yml")
 if config["regenerate"]:
     client = start_cluster.start(cpus=50, mem_size="5GB")
+    #client = None
 else:
     client = None
 
