@@ -313,25 +313,17 @@ def generate_crops(gdf, sensor_glob, savedir, client=None, convert_h5=False, rgb
                 print("Future failed with {}".format(traceback.print_exc()))
     else:
         for index, row in gdf.iterrows():
-            try:
-                #Check if h5 -> tif conversion is complete
-                if convert_h5:
-                    if rgb_glob is None:
-                        raise ValueError("rgb_glob is None, but convert_h5 is True, please supply glob to search for rgb images")
-                    else:
-                        img_path = lookup_and_convert(rgb_pool=rgb_pool, hyperspectral_pool=img_pool, savedir=HSI_tif_dir, bounds=row.geometry.bounds, multi_year=True)
+            if convert_h5:
+                if rgb_glob is None:
+                    raise ValueError("rgb_glob is None, but convert_h5 is True, please supply glob to search for rgb images")
                 else:
-                    img_path = find_sensor_path(lookup_pool = img_pool, bounds = row.geometry.bounds)  
-            except:
-                print("{} failed to find sensor path with traceback".format(row.geometry.bounds, traceback.print_exc()))
-                raise
-            try:
-                for x in img_path:
-                    annotation = write_crop(row=row, img_path=x, savedir=savedir, replace=replace)
-                    annotations.append(annotation)                    
-            except Exception as e:
-                print("index {} failed with {}".format(index,e))
-                raise
+                    img_path = lookup_and_convert(rgb_pool=rgb_pool, hyperspectral_pool=img_pool, savedir=HSI_tif_dir, bounds=row.geometry.bounds, multi_year=True)
+            else:
+                img_path = find_sensor_path(lookup_pool = img_pool, bounds = row.geometry.bounds)  
+ 
+            for x in img_path:
+                annotation = write_crop(row=row, img_path=x, savedir=savedir, replace=replace)
+                annotations.append(annotation)                    
     
     annotations = pd.concat(annotations)
         
