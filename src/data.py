@@ -123,12 +123,15 @@ def sample_plots(shp, min_train_samples=5, min_test_samples=3, iteration = 1):
     #remove fixed boxes from test
     test = test.loc[~test["box_id"].str.contains("fixed").fillna(False)]
     
+    #only most recent year in test
+    test = test.groupby("individualID").apply(lambda x: x.sort_values("tile_year", ascending=False).head(1))
+    
     test = test.groupby("taxonID").filter(lambda x: x.shape[0] > min_test_samples)
     train = train.groupby("taxonID").filter(lambda x: x.shape[0] > min_train_samples)
     
     train = train[train.taxonID.isin(test.taxonID)]
     test = test[test.taxonID.isin(train.taxonID)]
-    
+
     return train, test
     
 def train_test_split(shp, config, client = None):

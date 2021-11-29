@@ -235,6 +235,7 @@ def points_to_crowns(
 
 def write_crop(row, img_path, savedir, replace=True):
     """Wrapper to write a crop based on size and savedir"""
+    tile_year = os.path.splitext(img_path.split("_")[-1])[0]
     if replace == False:
         filename = "{}/{}.tif".format(savedir, row["individual"])
         file_exists = os.path.exists(filename)
@@ -245,7 +246,7 @@ def write_crop(row, img_path, savedir, replace=True):
             filename = patches.crop(bounds=row["geometry"].bounds, sensor_path=img_path, savedir=savedir, basename=row["individual"])  
     else:
         filename = patches.crop(bounds=row["geometry"].bounds, sensor_path=img_path, savedir=savedir, basename=row["individual"])
-        annotation = pd.DataFrame({"image_path":[filename], "taxonID":[row["taxonID"]], "plotID":[row["plotID"]], "individualID":[row["individual"]], "siteID":[row["siteID"]],"box_id":[row["box_id"]]})
+        annotation = pd.DataFrame({"image_path":[filename], "taxonID":[row["taxonID"]], "plotID":[row["plotID"]], "individualID":[row["individual"]], "siteID":[row["siteID"]],"tile_year":[tile_year],"box_id":[row["box_id"]]})
         return annotation
 
 def generate_crops(gdf, sensor_glob, savedir, client=None, convert_h5=False, rgb_glob=None, HSI_tif_dir=None, replace=True):
@@ -285,8 +286,9 @@ def generate_crops(gdf, sensor_glob, savedir, client=None, convert_h5=False, rgb
                     img_path = find_sensor_path(lookup_pool = img_pool, bounds = row.geometry.bounds)  
             except:
                 print("{} failed to find sensor path with traceback {}".format(row.geometry.bounds, traceback.print_exc()))
-            future = client.submit(write_crop,row=row,img_path=img_path, savedir=savedir, replace=replace)
-            futures.append(future)
+            for x in img_path:
+                future = client.submit(write_crop,row=row,img_path=x, savedir=savedir, replace=replace)
+                futures.append(future)
             
         wait(futures)
         for x in futures:
@@ -303,14 +305,15 @@ def generate_crops(gdf, sensor_glob, savedir, client=None, convert_h5=False, rgb
                     if rgb_glob is None:
                         raise ValueError("rgb_glob is None, but convert_h5 is True, please supply glob to search for rgb images")
                     else:
-                        img_path = lookup_and_convert(rgb_pool=rgb_pool, hyperspectral_pool=img_pool, savedir=HSI_tif_dir, bounds=row.geometry.bounds)
+                        img_path = lookup_and_convert(rgb_pool=rgb_pool, hyperspectral_pool=img_pool, savedir=HSI_tif_dir, bounds=row.geometry.bounds, multi_year=True)
                 else:
-                    img_path = find_sensor_path(lookup_pool = img_pool, bounds = row.geometry.bounds)  
+                    img_path = find_sensor_path(lookup_pool = img_pool, bounds = row.geometry.bounds, multi_year=True)  
             except:
                 print("{} failed to find sensor path with traceback".format(row.geometry.bounds, traceback.print_exc()))
                 continue
             try:
-                annotation = write_crop(row=row, img_path=img_path, savedir=savedir, replace=replace)
+                for x in img_path:
+                    annotation = write_crop(row=row, img_path=x, savedir=savedir, replace=replace)
             except Exception as e:
                 print("index {} failed with {}".format(index,e))
                 continue

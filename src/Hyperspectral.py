@@ -149,16 +149,20 @@ def calc_clip_index(clipExtent, h5Extent, xscale=1, yscale=1):
     return ind_ext
 
 
-def generate_raster(h5_path, save_dir, rgb_filename=None, bands="no_water", bounds = False):
+def generate_raster(h5_path, save_dir, rgb_filename=None, bands="no_water", bounds = False, suffix=None):
     """
     h5_path: input path to h5 file on disk
     bands: "all" bands or "false color", "no_water" bands
     save_dir: Directory to save raster object
     rgb_filename= Path to rgb image to draw extent and crs definition
-    
+    suffix: add string to the end of the saved filename
     returns: True if saved file exists
     """
-
+    if suffix:
+        suffix = "_{}".format(suffix)
+    else:
+        suffix = ""
+        
     #Get numpy array and metadata
     metadata, refl = h5refl2array(h5_path)
     
@@ -205,10 +209,10 @@ def generate_raster(h5_path, save_dir, rgb_filename=None, bands="no_water", boun
     #Create new filepath
     if bands == "false_color":
         tilename = os.path.splitext(
-            os.path.basename(rgb_filename))[0] + "_false_color.tif"
+            os.path.basename(rgb_filename))[0] + "_false_color{}.tif".format(suffix)
     else:
         tilename = os.path.splitext(
-            os.path.basename(rgb_filename))[0] + "_hyperspectral.tif"
+            os.path.basename(rgb_filename))[0] + "_hyperspectral{}.tif".format(suffix)
 
     #Save georeference crop to file
     array2raster(tilename, refl, metadata, clipExtent, save_dir)
