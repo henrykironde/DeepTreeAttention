@@ -321,17 +321,17 @@ def generate_crops(gdf, sensor_glob, savedir, client=None, convert_h5=False, rgb
                     else:
                         img_path = lookup_and_convert(rgb_pool=rgb_pool, hyperspectral_pool=img_pool, savedir=HSI_tif_dir, bounds=row.geometry.bounds, multi_year=True)
                 else:
-                    img_path = find_sensor_path(lookup_pool = img_pool, bounds = row.geometry.bounds, multi_year=True)  
+                    img_path = find_sensor_path(lookup_pool = img_pool, bounds = row.geometry.bounds)  
             except:
                 print("{} failed to find sensor path with traceback".format(row.geometry.bounds, traceback.print_exc()))
-                continue
+                raise
             try:
                 for x in img_path:
                     annotation = write_crop(row=row, img_path=x, savedir=savedir, replace=replace)
                     annotations.append(annotation)                    
             except Exception as e:
                 print("index {} failed with {}".format(index,e))
-                continue
+                raise
     
     annotations = pd.concat(annotations)
         
