@@ -271,8 +271,21 @@ def generate_crops(gdf, sensor_glob, savedir, client=None, convert_h5=False, rgb
     #There were erroneous point cloud .tif
     img_pool = [x for x in img_pool if not "point_cloud" in x]
     rgb_pool = [x for x in rgb_pool if not "point_cloud" in x]
-                        
+    
+
     if client:
+        #Create h5 files if needed
+        futures = []
+        for index, row in gdf.groupby("plotID").apply(lambda x: x.head(1)).iterrows():
+            try:
+                #Check if h5 -> tif conversion is complete
+                if convert_h5:
+                    if rgb_glob is None:
+                        raise ValueError("rgb_glob is None, but convert_h5 is True, please supply glob to search for rgb images")
+                    else:
+                        future = client.submit(lookup_and_convert, rgb_pool=rgb_pool, hyperspectral_pool=img_pool, savedir=HSI_tif_dir, bounds=row.geometry.bounds, multi_year=True)
+                        futures.append(future)
+        wait(futures)    
         futures = []
         for index, row in gdf.iterrows():
             try:
