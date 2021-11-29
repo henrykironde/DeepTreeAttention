@@ -82,13 +82,17 @@ def lookup_and_convert(rgb_pool, hyperspectral_pool, savedir, bounds = None, sha
     rgb_path = find_sensor_path(shapefile=shapefile, lookup_pool=rgb_pool, bounds=bounds)
 
     if type(hyperspectral_h5_path) == list:
+        tif_paths = []
         for x in hyperspectral_h5_path:
             #convert .h5 hyperspec tile if needed
             year = year_from_tile(x)
             tif_basename = os.path.splitext(os.path.basename(rgb_path))[0] + "_hyperspectral_{}.tif".format(year)
             tif_path = "{}/{}".format(savedir, tif_basename)
             if not os.path.exists(tif_path):
-                tif_path = convert_h5(x, rgb_path, savedir)            
+                tif_path = convert_h5(x, rgb_path, savedir)  
+                tif_paths.append(tif_path)
+            
+            return tif_paths
     else:
         #convert .h5 hyperspec tile if needed
         tif_basename = os.path.splitext(os.path.basename(rgb_path))[0] + "_hyperspectral.tif"
