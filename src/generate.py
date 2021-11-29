@@ -240,7 +240,7 @@ def write_crop(row, img_path, savedir, replace=True):
         filename = "{}/{}.tif".format(savedir, row["individual"])
         file_exists = os.path.exists(filename)
         if file_exists:
-            annotation = pd.DataFrame({"image_path":[filename], "taxonID":[row["taxonID"]], "plotID":[row["plotID"]], "individualID":[row["individual"]], "siteID":[row["siteID"]]})            
+            annotation = pd.DataFrame({"image_path":[filename], "taxonID":[row["taxonID"]], "plotID":[row["plotID"]], "individualID":[row["individual"]],"tile_year":[tile_year], "siteID":[row["siteID"]]})            
             return annotation            
         else:
             filename = patches.crop(bounds=row["geometry"].bounds, sensor_path=img_path, savedir=savedir, basename=row["individual"])  
@@ -308,7 +308,8 @@ def generate_crops(gdf, sensor_glob, savedir, client=None, convert_h5=False, rgb
             try:
                 annotation = x.result()
                 annotations.append(annotation)                
-            except:
+            except Exception as e:
+                print(e)
                 print("Future failed with {}".format(traceback.print_exc()))
     else:
         for index, row in gdf.iterrows():
@@ -327,11 +328,10 @@ def generate_crops(gdf, sensor_glob, savedir, client=None, convert_h5=False, rgb
             try:
                 for x in img_path:
                     annotation = write_crop(row=row, img_path=x, savedir=savedir, replace=replace)
+                    annotations.append(annotation)                    
             except Exception as e:
                 print("index {} failed with {}".format(index,e))
                 continue
-    
-            annotations.append(annotation)
     
     annotations = pd.concat(annotations)
         
