@@ -237,15 +237,15 @@ def write_crop(row, img_path, savedir, replace=True):
     """Wrapper to write a crop based on size and savedir"""
     tile_year = os.path.splitext(img_path.split("_")[-1])[0]
     if replace == False:
-        filename = "{}/{}.tif".format(savedir, row["individual"])
+        filename = "{}/{}_{}.tif".format(savedir, row["individual"], tile_year)
         file_exists = os.path.exists(filename)
         if file_exists:
             annotation = pd.DataFrame({"image_path":[filename], "taxonID":[row["taxonID"]], "plotID":[row["plotID"]], "individualID":[row["individual"]],"tile_year":[tile_year], "siteID":[row["siteID"]]})            
             return annotation            
         else:
-            filename = patches.crop(bounds=row["geometry"].bounds, sensor_path=img_path, savedir=savedir, basename=row["individual"])  
+            filename = patches.crop(bounds=row["geometry"].bounds, sensor_path=img_path, savedir=savedir, basename="{}_{}".format(row["individual"], tile_year))  
     else:
-        filename = patches.crop(bounds=row["geometry"].bounds, sensor_path=img_path, savedir=savedir, basename=row["individual"])
+        filename = patches.crop(bounds=row["geometry"].bounds, sensor_path=img_path, savedir=savedir, basename="{}_{}".format(row["individual"], tile_year))
         annotation = pd.DataFrame({"image_path":[filename], "taxonID":[row["taxonID"]], "plotID":[row["plotID"]], "individualID":[row["individual"]], "siteID":[row["siteID"]],"tile_year":[tile_year],"box_id":[row["box_id"]]})
         return annotation
 
