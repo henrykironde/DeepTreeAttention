@@ -78,11 +78,9 @@ def lookup_and_convert(rgb_pool, hyperspectral_pool, savedir, bounds = None, sha
             tif_path = "{}/{}".format(savedir, tif_basename)
             if not os.path.exists(tif_path):
                 tif_path = convert_h5(x, rgb_path, savedir, year=year)  
-                tif_paths.append(tif_path)
-            else:
-                tif_paths.append(tif_path)
+            tif_paths.append(tif_path)
                 
-            return tif_paths
+        return tif_paths
     else:
         #convert .h5 hyperspec tile if needed
         tif_basename = os.path.splitext(os.path.basename(rgb_path))[0] + "_hyperspectral.tif"
