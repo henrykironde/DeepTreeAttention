@@ -252,7 +252,10 @@ class TreeModel(LightningModule):
                 ax = fig.add_subplot(1, 1, 1)                
                 individual = row["individual"]
                 print("Creating plot for {}".format(individual))
-                geom = test_crowns[test_crowns.individual == individual].geometry.iloc[0]
+                try:
+                    geom = test_crowns[test_crowns.individual == individual].geometry.iloc[0]
+                except:
+                    raise ValueError("{} not found in {}".format(individual, test_crowns.individual.unique()))
                 left, bottom, right, top = geom.bounds
                 
                 #Find image
