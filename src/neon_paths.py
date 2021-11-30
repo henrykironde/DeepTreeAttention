@@ -33,34 +33,22 @@ def find_sensor_path(lookup_pool, shapefile=None, bounds=None, multi_year=False)
     """
     if shapefile is None:
         geo_index = bounds_to_geoindex(bounds=bounds)
-        match = [x for x in lookup_pool if geo_index in x]
-        match.sort()
-        if not multi_year:
-            match = match[::-1]
-            try:
-                year_match = match[0]
-            except Exception as e:
-                raise ValueError("No matches for geoindex {} in sensor pool with bounds {}".format(geo_index, bounds))
-        else:
-            return match
     else:
-
-        #Get file metadata from name string
         basename = os.path.splitext(os.path.basename(shapefile))[0]
         geo_index = re.search("(\d+_\d+)_image", basename).group(1)
-        match = [x for x in lookup_pool if geo_index in x]
-        match.sort()
-        if not multi_year:
-            match = match[::-1]        
-            try:
-                year_match = match[0]
-            except Exception as e:
-                raise ValueError("No matches for geoindex {} in sensor pool".format(geo_index))
-        else:
-            return match
+    
+    match = [x for x in lookup_pool if geo_index in x]
+    match.sort()
+    if len(match) == 0:
+        raise ValueError("No matches for geoindex {} in sensor pool with bounds {}".format(geo_index, bounds))
 
-    return year_match
-
+    if multi_year:
+        return match
+    else:
+        match = match[::-1]
+        year_match = match[0]
+        return year_match
+    
 def convert_h5(hyperspectral_h5_path, rgb_path, savedir, year=None):
     if year:
         tif_basename = os.path.splitext(os.path.basename(rgb_path))[0] + "_hyperspectral_{}.tif".format(year)

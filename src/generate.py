@@ -320,6 +320,7 @@ def generate_crops(gdf, sensor_glob, savedir, client=None, convert_h5=False, rgb
                     img_path = lookup_and_convert(rgb_pool=rgb_pool, hyperspectral_pool=img_pool, savedir=HSI_tif_dir, bounds=row.geometry.bounds, multi_year=True)
             else:
                 img_path = find_sensor_path(lookup_pool = img_pool, bounds = row.geometry.bounds)  
+                img_path = [img_path]
  
             for x in img_path:
                 annotation = write_crop(row=row, img_path=x, savedir=savedir, replace=replace)

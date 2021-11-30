@@ -1,5 +1,5 @@
 image_path,taxonID,plotID,individualID,siteID,tile_year,box_id,point_id,label,site
-/var/folders/5m/dmt63fq959jf1lgc58kz9w0h0000gn/T/NEON.PLA.D01.HARV.01397.tif,PIST,HARV_010,NEON.PLA.D01.HARV.01397,HARV,image,3,0,0,0
-/var/folders/5m/dmt63fq959jf1lgc58kz9w0h0000gn/T/NEON.PLA.D01.HARV.01660.tif,QURU,HARV_010,NEON.PLA.D01.HARV.01660,HARV,image,25,0,1,0
-/var/folders/5m/dmt63fq959jf1lgc58kz9w0h0000gn/T/NEON.PLA.D01.HARV.01866.tif,PIST,HARV_010,NEON.PLA.D01.HARV.01866,HARV,image,35,0,0,0
-/var/folders/5m/dmt63fq959jf1lgc58kz9w0h0000gn/T/NEON.PLA.D01.HARV.01865.tif,QURU,HARV_010,NEON.PLA.D01.HARV.01865,HARV,image,fixed_box_13,0,1,0
+/var/folders/5m/dmt63fq959jf1lgc58kz9w0h0000gn/T/NEON.PLA.D01.HARV.01397_image.tif,PIST,HARV_010,NEON.PLA.D01.HARV.01397,HARV,image,3,0,0,0
+/var/folders/5m/dmt63fq959jf1lgc58kz9w0h0000gn/T/NEON.PLA.D01.HARV.01660_image.tif,QURU,HARV_010,NEON.PLA.D01.HARV.01660,HARV,image,25,0,1,0
+/var/folders/5m/dmt63fq959jf1lgc58kz9w0h0000gn/T/NEON.PLA.D01.HARV.01866_image.tif,PIST,HARV_010,NEON.PLA.D01.HARV.01866,HARV,image,35,0,0,0
+/var/folders/5m/dmt63fq959jf1lgc58kz9w0h0000gn/T/NEON.PLA.D01.HARV.01865_image.tif,QURU,HARV_010,NEON.PLA.D01.HARV.01865,HARV,image,fixed_box_13,0,1,0
