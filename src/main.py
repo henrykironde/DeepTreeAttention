@@ -251,6 +251,7 @@ class TreeModel(LightningModule):
                 fig = plt.figure(0)
                 ax = fig.add_subplot(1, 1, 1)                
                 individual = row["individual"]
+                print("Creating plot for {}".format(individual))
                 geom = test_crowns[test_crowns.individual == individual].geometry.iloc[0]
                 left, bottom, right, top = geom.bounds
                 
