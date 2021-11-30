@@ -52,6 +52,8 @@ def test_TreeDataset(dm, config,tmpdir):
     image = inputs["HSI"]
     assert image.shape == (3, config["image_size"], config["image_size"])
     
+    assert not ".tif" in individuals[0]
+    
     #Test loader
     data_loader = data.TreeDataset(csv_file="{}/tests/data/processed/test.csv".format(ROOT), train=False, config=config)    
     annotations = pd.read_csv("{}/tests/data/processed/test.csv".format(ROOT))
