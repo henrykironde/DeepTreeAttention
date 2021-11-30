@@ -29,7 +29,7 @@ def index_to_example(index, test_csv, test_crowns, test_points, rgb_pool, comet_
     test = pd.read_csv(test_csv)
     test_crowns = gpd.read_file(test_crowns)
     test_points = gpd.read_file(test_points)
-    individual = os.path.splitext(os.path.basename(test.loc[index]["image_path"]))[0]
+    individual = os.path.splitext(os.path.basename(test.loc[index]["image_path"]))[0].split("_")[0]
     
     fig = plt.figure(0)
     ax = fig.add_subplot(1, 1, 1)                
