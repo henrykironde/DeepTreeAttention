@@ -15,7 +15,7 @@ min_train_samples: 4
 
 
 #Iterations to search for the best train-test split that mantains the largest number of species. Set to 1 for debugging, no files will be written
-iterations: 10000
+iterations: 1000
 #minimum CHM height, leave blank to skip CHM filtering
 min_CHM_height: 1
 #Minimum difference between measured height and CHM height
@@ -45,10 +45,10 @@ workers: 0
 gpus: 1
 batch_size: 32
 bands: 369
-lr: 0.0001
+lr: 0.00005
 fast_dev_run: False
 accelerator: dp
-epochs: 100
+epochs: 120
 
 #Evaluation config
 #Top k class recall score
