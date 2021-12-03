@@ -86,6 +86,9 @@ def filter_data(path, config):
     #Oak Right Lab has no AOP data
     shp = shp[~(shp.siteID.isin(["PUUM","ORNL"]))]
 
+    #There are a couple NEON plots within the OSBS megaplot, make sure they are removed
+    shp = shp[~shp.plotID.isin(["OSBS_026","OSBS_029","OSBS_039","OSBS_027","OSBS_036"])]
+
     return shp
 
 def sample_plots(shp, min_train_samples=5, min_test_samples=3, iteration = 1):
@@ -97,23 +100,21 @@ def sample_plots(shp, min_train_samples=5, min_test_samples=3, iteration = 1):
         iteration: a dummy parameter to make dask submission unique
     """
     #split by plot level
-    plotIDs = shp.plotID.unique()
-    
-    #No contrib plots in test
-    plotIDs = [x for x in plotIDs if not 'contrib' in x]
-    
+    plotIDs = list(shp.plotID.unique())
     np.random.shuffle(plotIDs)
-    test_species = []
-    test_plots = []
-    for plotID in plotIDs:
+    test = shp[shp.plotID == plotIDs[0]]
+    
+    for plotID in plotIDs[1:]:
+        include = False
         selected_plot = shp[shp.plotID == plotID]
-        if not all([x in test_species for x in selected_plot.taxonID.unique()]):
-            test_plots.append(plotID)
-            for x in selected_plot.taxonID.unique():
-                test_species.append(x)
-        
-    test = shp[shp.plotID.isin(test_plots)]
-    train = shp[~shp.plotID.isin(test_plots)]
+        # If any species is missing from min samples, include plot
+        for x in selected_plot.taxonID.unique():
+            if sum(test.taxonID == x) < min_test_samples:
+                include = True
+        if include:
+            test = pd.concat([test,selected_plot])
+            
+    train = shp[~shp.plotID.isin(test.plotID.unique())]
     
     #if debug
     if train.empty:
@@ -142,8 +143,11 @@ def train_test_split(shp, config, client = None):
     Returns:
         None: train.shp and test.shp are written as side effect
         """    
-    #set seed.
-    print("splitting data into train test. Initial data has {} points from {} species".format(shp.shape[0],shp.taxonID.nunique()))
+    min_sampled = config["min_train_samples"] + config["min_test_samples"]
+    keep = shp.taxonID.value_counts() > (min_sampled)
+    species_to_keep = keep[keep].index
+    shp = shp[shp.taxonID.isin(species_to_keep)]
+    print("splitting data into train test. Initial data has {} points from {} species with a min of {} samples".format(shp.shape[0],shp.taxonID.nunique(),min_sampled))
     test_species = 0
     ties = []
     if client:
@@ -163,7 +167,6 @@ def train_test_split(shp, config, client = None):
                 ties = []
                 ties.append([train, test])
             elif test.taxonID.nunique() == test_species:
-                print("ties")
                 ties.append([train, test])          
     else:
         for x in np.arange(config["iterations"]):
@@ -177,7 +180,6 @@ def train_test_split(shp, config, client = None):
                 ties = []
                 ties.append([train, test])
             elif test.taxonID.nunique() == test_species:
-                print("ties")
                 ties.append([train, test])
     
     # The size of the datasets
@@ -359,9 +361,7 @@ class TreeData(LightningDataModule):
                 
                 #load any megaplot data
                 if not self.config["megaplot_dir"] is None:
-                    megaplot_data = megaplot.load(directory=self.config["megaplot_dir"], rgb_pool=self.config["rgb_sensor_pool"], client = self.client, config=self.config)
-                    #don't add species from contrib data (?) https://github.com/weecology/DeepTreeAttention/issues/65
-                    megaplot_data = megaplot_data[megaplot_data.taxonID.isin(df.taxonID.unique())]
+                    megaplot_data = megaplot.load(directory=self.config["megaplot_dir"], config=self.config)
                     df = pd.concat([megaplot_data, df])
                     
                 #Just one site
@@ -407,6 +407,7 @@ class TreeData(LightningDataModule):
                 client=self.client,
                 replace=self.config["replace"]
             )
+            annotations.to_csv("{}/processed/annotations.csv".format(self.data_dir))
             
             if self.comet_logger:
                 self.comet_logger.experiment.log_parameter("Species after crop generation",len(annotations.taxonID.unique()))

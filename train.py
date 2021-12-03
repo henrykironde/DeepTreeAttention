@@ -40,8 +40,7 @@ comet_logger.experiment.add_tag(git_branch)
 #Hash train and test
 train = pd.read_csv("data/processed/train.csv")
 test = pd.read_csv("data/processed/test.csv")
-novel = gpd.read_file("data/processed/novel_species.shp")
-novel = pd.DataFrame(novel)
+novel = pd.read_csv("data/processed/novel_species.csv")
 
 comet_logger.experiment.log_parameter("train_hash",hash_pandas_object(train))
 comet_logger.experiment.log_parameter("test_hash",hash_pandas_object(test))
@@ -92,5 +91,10 @@ comet_logger.experiment.log_table("test_predictions.csv", results)
 
 #Within site confusion
 site_lists = train.groupby("label").site.unique()
+<<<<<<< HEAD
 within_site_confusion = metrics.site_confusion(y_true = results.label, y_pred = results.pred_label, site_lists=site_lists)
 comet_logger.experiment.log_metric("within_site_confusion", within_site_confusion)
+=======
+within_site_confusion = metrics.site_confusion(y_true = results.label, y_pred = results.pred_label_top1, site_lists=site_lists)
+comet_logger.experiment.log_metric("within_site_confusion", within_site_confusion)
+>>>>>>> main
