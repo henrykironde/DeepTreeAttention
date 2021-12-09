@@ -18,12 +18,7 @@ from pandas.util import hash_pandas_object
 #Create datamodule
 config = data.read_config("config.yml")
 if config["regenerate"]:
-<<<<<<< HEAD
-    client = start_cluster.start(cpus=30, mem_size="10GB")
-    #client = None
-=======
     client = start_cluster.start(cpus=75, mem_size="5GB")
->>>>>>> main
 else:
     client = None
 
@@ -98,11 +93,8 @@ comet_logger.experiment.log_table("test_predictions.csv", results)
 site_lists = train.groupby("label").site.unique()
 within_site_confusion = metrics.site_confusion(y_true = results.label, y_pred = results.pred_label_top1, site_lists=site_lists)
 comet_logger.experiment.log_metric("within_site_confusion", within_site_confusion)
-<<<<<<< HEAD
-=======
 
 #Within plot confusion
 plot_lists = train.groupby("label").plotID.unique()
 within_plot_confusion = metrics.site_confusion(y_true = results.label, y_pred = results.pred_label_top1, site_lists=plot_lists)
 comet_logger.experiment.log_metric("within_plot_confusion", within_plot_confusion)
->>>>>>> main
