@@ -10,9 +10,8 @@ HSI_tif_dir: /orange/idtrees-collab/Hyperspectral_tifs/
 #NEON data filtering
 min_stem_diameter: 10
 #Minimum number of test samples per class to be included
-min_train_samples: 9
-min_train_samples: 4
-
+min_train_samples: 7
+min_train_samples: 5
 
 #Iterations to search for the best train-test split that mantains the largest number of species. Set to 1 for debugging, no files will be written
 iterations: 1000
@@ -26,7 +25,7 @@ megaplot_dir: /orange/idtrees-collab/megaplot/
 
 #Crop generation, whether to make a new dataset and customize which parts to recreate
 #Make new dataset
-regenerate: True
+regenerate: False
 convert_h5: True
 #Overwrite existing crops
 replace: True
