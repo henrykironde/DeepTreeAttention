@@ -59,8 +59,8 @@ def experiment():
 #Training module
 @pytest.fixture(scope="session")
 def m(config, dm):
-    model = Hang2020.vanilla_CNN(bands=3, classes=2)
-    m = main.TreeModel(model=model, classes=2, config=config, label_dict=dm.species_label_dict)
+    model = Hang2020.vanilla_CNN(bands=3, classes=3)
+    m = main.TreeModel(model=model, classes=3, config=config, label_dict=dm.species_label_dict)
     m.ROOT = "{}/tests/".format(ROOT)
     
     return m
@@ -96,9 +96,4 @@ def test_predict_crown(config, m, dm):
     
     assert label in dm.species_label_dict.keys()
     assert score > 0 
-    
-def test_get_features(config, m, dm):
-    df = pd.read_csv(dm.train_file)
-    features = m.get_features(dm.train_ds)
-    assert df.shape[0] == features.shape[0]
     

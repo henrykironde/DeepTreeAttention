@@ -122,7 +122,7 @@ def sample_plots(shp, min_train_samples=5, min_test_samples=3, iteration = 1):
         train = shp[shp.plotID == shp.plotID.unique()[1]]
     
     #remove fixed boxes from test
-    test = test.loc[~test["box_id"].str.contains("fixed").fillna(False)]
+    test = test.loc[~test["box_id"].astype(str).str.contains("fixed").fillna(False)]
     
     #only most recent year in test
     test = test.groupby("individualID").apply(lambda x: x.sort_values("tile_year", ascending=False).head(1))
@@ -185,7 +185,7 @@ def train_test_split(shp, config, client = None):
     # The size of the datasets
     if len(ties) > 1:
         print("The size of tied datasets with {} species is {}".format(test_species, [x[1].shape[0] for x in ties]))        
-        saved_train, saved_test = ties[np.argmin([x[1].shape[0] for x in ties])]
+        saved_train, saved_test = ties[np.argmax([x[1].shape[0] for x in ties])]
         
     train = saved_train
     test = saved_test    
@@ -373,7 +373,11 @@ class TreeData(LightningDataModule):
                     self.comet_logger.experiment.log_parameter("Samples before CHM filter",df.shape[0])
                     
                 #Filter points based on LiDAR height
-                df = CHM.filter_CHM(df, CHM_pool=self.config["CHM_pool"],min_CHM_diff=self.config["min_CHM_diff"], min_CHM_height=self.config["min_CHM_height"])      
+                df = CHM.filter_CHM(df, CHM_pool=self.config["CHM_pool"],
+                                    min_CHM_height=self.config["min_CHM_height"], 
+                                    max_CHM_diff=self.config["max_CHM_diff"], 
+                                    CHM_height_limit=self.config["CHM_height_limit"])  
+                
                 df.to_file("{}/processed/canopy_points.shp".format(self.data_dir))
                 
                 if self.comet_logger:
