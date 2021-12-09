@@ -38,6 +38,11 @@ comet_logger.experiment.add_tag(git_branch)
 #Hash train and test
 train = pd.read_csv("data/processed/train.csv")
 test = pd.read_csv("data/processed/test.csv")
+
+#HOTFIX if test is coming from main    
+test = test.groupby("individualID").apply(lambda x: x.sort_values("tile_year", ascending=False).head(1))
+test.to_csv("data/processed/test.csv")
+
 novel = pd.read_csv("data/processed/novel_species.csv")
 
 comet_logger.experiment.log_parameter("train_hash",hash_pandas_object(train))
