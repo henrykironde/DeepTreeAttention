@@ -27,13 +27,13 @@ megaplot_dir: /orange/idtrees-collab/megaplot/
 #Outlier detection
 include_outliers: True
 classifier_epochs: 50
-autoencoder_epochs: 10
+autoencoder_epochs: 50
 classification_loss_scalar: 1
 autoencoder_loss_scalar: 0
 
 #Outlier detection
-outlier_threshold: 0.96
-distance_threshold: 5
+outlier_threshold: 0.995
+distance_threshold: 8
 
 #Crop generation, whether to make a new dataset and customize which parts to recreate
 #Make new dataset
@@ -60,7 +60,7 @@ bands: 369
 lr: 0.00005
 fast_dev_run: False
 accelerator:
-epochs: 130
+epochs: 120
 
 #Evaluation config
 #Top k class recall score
