@@ -260,10 +260,10 @@ class simulator():
         outlier_class = self.data_module.test.outlier.iloc[sample_ids].astype('category').cat.codes.astype(int).values
         
         #plot different sets
-        layerplot_vis = visualize.plot_2d_layer(features=self.classification_bottleneck, labels=observed_y, use_pca=False)
+        layerplot_vis = visualize.plot_2d_layer(features=self.classification_bottleneck, labels=observed_y, use_pca=True)
         self.comet_experiment.experiment.log_figure(figure=layerplot_vis, figure_name="classification_bottleneck_labels", step=self.model.current_epoch)        
         
-        layerplot_vis = visualize.plot_2d_layer(features=self.classification_bottleneck, labels=outlier_class, use_pca=False, size_weights=outlier_class+1)        
+        layerplot_vis = visualize.plot_2d_layer(features=self.classification_bottleneck, labels=outlier_class, use_pca=True, size_weights=outlier_class+1)        
         self.comet_experiment.experiment.log_figure(figure=layerplot_vis, figure_name="classification_bottleneck_outliers", step=self.model.current_epoch)
 
         layerplot_encoder = visualize.plot_2d_layer(self.encoder_activations, observed_y, use_pca=True)
@@ -283,7 +283,8 @@ class simulator():
         results["image_corrupt"] = results.test_index.apply(lambda x: self.data_module.test.iloc[x].image_corrupt)        
         outlier_detection_loss = outlier.autoencoder_outliers(results, outlier_threshold=self.config["outlier_threshold"], experiment=self.comet_experiment.experiment)
         outlier_detection_distance = outlier.distance_outliers(results, self.classification_bottleneck, labels=results.observed_label, threshold=self.config["distance_threshold"], experiment=self.comet_experiment.experiment)
-        results = pd.concat([outlier_detection_loss, outlier_detection_distance])
+        novel_detection = outlier.novel_detection(results, self.classification_bottleneck, experiment=self.comet_experiment.experiment)
+        results = pd.concat([outlier_detection_loss, outlier_detection_distance, novel_detection])
         
         return results
 

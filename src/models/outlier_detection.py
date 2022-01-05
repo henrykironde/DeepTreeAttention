@@ -37,14 +37,14 @@ class decoder_block(nn.Module):
         return x
     
 class classifier(nn.Module):
-    def __init__(self, classes, image_size = 28):
+    def __init__(self, classes, image_size = 28, embedding_size = 2):
         super(classifier, self).__init__()
         self.image_size = image_size
-        self.feature_length = 2 * self.image_size * image_size
+        self.feature_length = embedding_size * self.image_size * image_size
         #Classification layer
-        self.vis_conv1= encoder_block(in_channels=16, filters=2) 
-        self.classfication_bottleneck = nn.Linear(in_features=self.feature_length, out_features=2)        
-        self.classfication_layer = nn.Linear(in_features=2, out_features=classes)
+        self.vis_conv1= encoder_block(in_channels=16, filters=32) 
+        self.classfication_bottleneck = nn.Linear(in_features=self.feature_length, out_features=embedding_size)        
+        self.classfication_layer = nn.Linear(in_features=embedding_size, out_features=classes)
         
         #Visualization
         # a dict to store the activations        
@@ -78,7 +78,7 @@ class autoencoder(LightningModule):
         self.encoder_block2 = encoder_block(in_channels=64, filters=32, pool=True)
         self.encoder_block3 = encoder_block(in_channels=32, filters=16, pool=True)
         
-        self.classifier = classifier(classes, image_size=config["image_size"])
+        self.classifier = classifier(classes, image_size=config["image_size"], embedding_size=config["embedding_size"])
         
         #Decoder
         self.decoder_block1 = decoder_block(in_channels=16, filters=32)
