@@ -401,7 +401,6 @@ class TreeData(LightningDataModule):
                 dead_shp = dead_shp.head(self.config["dead_samples"])
                 crowns = pd.concat([crowns, dead_shp])
                 
-      
                 crowns.to_file("{}/processed/crowns.shp".format(self.data_dir))
             else:
                 crowns = gpd.read_file("{}/processed/crowns.shp".format(self.data_dir))
