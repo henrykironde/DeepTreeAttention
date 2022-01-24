@@ -46,7 +46,7 @@ workers: 0
 
 #Network Parameters
 gpus: 1
-batch_size: 1024
+batch_size: 32
 bands: 369
 lr: 0.00005
 fast_dev_run: False
