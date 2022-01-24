@@ -25,7 +25,7 @@ CHM_height_limit: 8
 megaplot_dir: /orange/idtrees-collab/megaplot/
 
 #Dead samples
-dead_samples: 100
+dead_samples: 200
 
 #Crop generation, whether to make a new dataset and customize which parts to recreate
 #Make new dataset

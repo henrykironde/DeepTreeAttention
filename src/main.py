@@ -354,5 +354,14 @@ class TreeModel(LightningModule):
             site_data_frame = pd.concat(site_data_frame)
             experiment.log_table("site_results.csv", site_data_frame)
         
+        #Log results by species
+        taxon_accuracy = torchmetrics.functional.accuracy(preds=torch.tensor(group.pred_label_top1.values),target=torch.tensor(group.label.values), average="none", num_classes=self.classes)
+        taxon_precision = torchmetrics.functional.precision(preds=torch.tensor(group.pred_label_top1.values),target=torch.tensor(group.label.values), average="none", num_classes=self.classes)
+        species_table = pd.DataFrame({"taxonID":self.label_to_index.keys(), "accuracy":taxon_accuracy,"precision":taxon_precision})
+        
+        if experiment:
+            experiment.log_metrics(species_table.set_index("taxonID").accuracy.to_dict(),prefix="accuracy")
+            experiment.log_metrics(species_table.set_index("taxonID").precision.to_dict(),prefix="precision")
+            
         return results
             
