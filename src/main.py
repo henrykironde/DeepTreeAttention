@@ -333,8 +333,8 @@ class TreeModel(LightningModule):
             HSI_pool=HSI_pool)        
         
         #Spatial function
-        print("Length of neighbors is:".format(len(neighbors)))
-        print("Length of features is:".format(features.shape))
+        print("Length of neighbors is: {}".format(len(neighbors)))
+        print("Length of features is: {}".format(features.shape))
         
         labels, scores = spatial.spatial_smooth(neighbors, features, alpha=self.config["neighborhood_strength"])
         results["spatial_pred_label"] = labels
