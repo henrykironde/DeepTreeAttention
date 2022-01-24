@@ -365,7 +365,7 @@ class TreeData(LightningDataModule):
                     southeast = southeast.taxonID.unique()
                     plotIDs_to_keep = df[df.taxonID.isin(southeast)].plotID.unique()
                     df = df[df.plotID.isin(plotIDs_to_keep)]
-                    
+    
                 if self.comet_logger:
                     self.comet_logger.experiment.log_parameter("Species before CHM filter",len(df.taxonID.unique()))
                     self.comet_logger.experiment.log_parameter("Samples before CHM filter",df.shape[0])
@@ -394,7 +394,14 @@ class TreeData(LightningDataModule):
                 if self.comet_logger:
                     self.comet_logger.experiment.log_parameter("Species after crown prediction",len(crowns.taxonID.unique()))
                     self.comet_logger.experiment.log_parameter("Samples after crown prediction",crowns.shape[0])
-                                
+                          
+                #Add in hand-annotated dead class
+                dead_shp = gpd.read_file("{}/raw/dead.shp".format(self.data_dir))
+                dead_shp = dead_shp[dead_shp.siteID.isin(df.siteID.unique())]
+                dead_shp = dead_shp.head(self.config["dead_samples"])
+                crowns = pd.concat([crowns, dead_shp])
+                
+      
                 crowns.to_file("{}/processed/crowns.shp".format(self.data_dir))
             else:
                 crowns = gpd.read_file("{}/processed/crowns.shp".format(self.data_dir))
