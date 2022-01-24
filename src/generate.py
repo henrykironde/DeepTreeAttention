@@ -277,7 +277,6 @@ def generate_crops(gdf, sensor_glob, savedir, client=None, convert_h5=False, rgb
     img_pool = [x for x in img_pool if not "point_cloud" in x]
     rgb_pool = [x for x in rgb_pool if not "point_cloud" in x]
      
-    
     #Looking up the rgb -> HSI tile naming is expensive and repetitive. Create a dictionary first.
     gdf["geo_index"] = gdf.geometry.apply(lambda x: bounds_to_geoindex(x.bounds))
     tiles = gdf["geo_index"].unique()
