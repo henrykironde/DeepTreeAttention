@@ -91,7 +91,7 @@ def filter_data(path, config):
     shp["plantStatus"] = shp.plantStatus.str.upper()
     
     #Assign dead trees a taxonID
-    shp.loc[shp.plantStatus.str.contains("DEAD") & ~shp.plantStatus.str.contains("LOST") ,"taxonID"] = "DEAD"
+    shp.loc[shp.plantStatus.str.contains("DEAD") & ~shp.plantStatus.str.contains("LOST") & shp.siteID.isin(["OSBS","JERC","DSNY","TALL","LENO","DELA"]),"taxonID"] = "DEAD"
     
     return shp
 
