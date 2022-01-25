@@ -32,7 +32,6 @@ def filter_data(path, config):
     field = field[~field.growthForm.isin(["liana","small shrub"])]
     field = field[~field.growthForm.isnull()]
     field = field[~field.plantStatus.isnull()]        
-    field = field[field.plantStatus.str.contains("Live")]    
     
     groups = field.groupby("individualID")
     shaded_ids = []
@@ -88,7 +87,10 @@ def filter_data(path, config):
 
     #There are a couple NEON plots within the OSBS megaplot, make sure they are removed
     shp = shp[~shp.plotID.isin(["OSBS_026","OSBS_029","OSBS_039","OSBS_027","OSBS_036"])]
-
+    
+    #Assign dead trees a taxonID
+    shp.loc[shp.plantStatus.str.contains("Live"),"taxonID"] = "DEAD"
+    
     return shp
 
 def sample_plots(shp, min_train_samples=5, min_test_samples=3, iteration = 1):
@@ -395,11 +397,11 @@ class TreeData(LightningDataModule):
                     self.comet_logger.experiment.log_parameter("Species after crown prediction",len(crowns.taxonID.unique()))
                     self.comet_logger.experiment.log_parameter("Samples after crown prediction",crowns.shape[0])
                           
-                #Add in hand-annotated dead class
-                dead_shp = gpd.read_file("{}/raw/dead.shp".format(self.data_dir))
-                dead_shp = dead_shp[dead_shp.siteID.isin(df.siteID.unique())]
-                dead_shp = dead_shp.head(self.config["dead_samples"])
-                crowns = pd.concat([crowns, dead_shp])
+                ##Add in hand-annotated dead class
+                #dead_shp = gpd.read_file("{}/raw/dead.shp".format(self.data_dir))
+                #dead_shp = dead_shp[dead_shp.siteID.isin(df.siteID.unique())]
+                #dead_shp = dead_shp.head(self.config["dead_samples"])
+                #crowns = pd.concat([crowns, dead_shp])
                 
                 crowns.to_file("{}/processed/crowns.shp".format(self.data_dir))
             else:
