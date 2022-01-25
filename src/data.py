@@ -88,8 +88,10 @@ def filter_data(path, config):
     #There are a couple NEON plots within the OSBS megaplot, make sure they are removed
     shp = shp[~shp.plotID.isin(["OSBS_026","OSBS_029","OSBS_039","OSBS_027","OSBS_036"])]
     
+    shp["plantStatus"] = shp.plantStatus.str.upper()
+    
     #Assign dead trees a taxonID
-    shp.loc[shp.plantStatus.str.contains("Live"),"taxonID"] = "DEAD"
+    shp.loc[shp.plantStatus.str.contains("DEAD") & ~shp.plantStatus.str.contains("LOST") ,"taxonID"] = "DEAD"
     
     return shp
 
